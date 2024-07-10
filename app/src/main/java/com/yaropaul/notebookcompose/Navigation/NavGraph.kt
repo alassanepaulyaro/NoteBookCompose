@@ -1,6 +1,5 @@
 package com.yaropaul.notebookcompose.Navigation
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +21,7 @@ import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationScreen
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationViewModel
+import com.yaropaul.notebookcompose.screens.home.HomeScreen
 import com.yaropaul.notebookcompose.utils.Constants.APP_ID
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import io.realm.kotlin.mongodb.App
@@ -40,7 +40,9 @@ fun SetupNavGraph(startDestination: String, navController: NavHostController) {
                 navController.navigate(Screen.Home.route)
             }
         )
-        HomeRoute()
+        HomeRoute(
+            navigateToWrite = {navController.navigate(Screen.Write.route)}
+        )
         WriteRoute()
     }
 }
@@ -63,7 +65,6 @@ fun NavGraphBuilder.authenticationRoute(navigateToHome: () -> Unit) {
                 viewModel.setLoading(true)
             },
             onTokenIdReceived = { tokenId ->
-                Log.d("Auth navgraph", "tokenId : $tokenId")
                 viewModel.signInWithMongoAtlas(tokenId = tokenId,
                     onSuccess = {
                         messageBarState.addSuccess("Successfully Authenticated !")
@@ -84,22 +85,11 @@ fun NavGraphBuilder.authenticationRoute(navigateToHome: () -> Unit) {
     }
 }
 
-fun NavGraphBuilder.HomeRoute() {
+fun NavGraphBuilder.HomeRoute(navigateToWrite: () -> Unit) {
     composable(route = Screen.Home.route) {
-        val scope = rememberCoroutineScope()
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(onClick = {
-                scope.launch(Dispatchers.IO) {
-                    App.create(APP_ID).currentUser?.logOut()
-                }
-            }) {
-                Text(text = "LogOut")
-            }
-        }
+        HomeScreen(onMenuClicked = { },
+            navigateToWrite
+        )
     }
 }
 

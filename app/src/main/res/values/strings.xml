@@ -4,4 +4,5 @@
     <string name="auth_subtitle">Please sign in to continue.</string>
     <string name="primary_text">Sign in with Google</string>
     <string name="secondary_text">Please wait…</string>
+    <string name="home_title">NoteBook</string>
 </resources>
