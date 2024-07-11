@@ -6,7 +6,7 @@
         <!-- Set the splash screen background to black -->
         <item name="windowSplashScreenBackground">@color/blue</item>
         <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated drawable. -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/book</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_book</item>
         <!-- Set the theme of the Activity that follows the splash screen. -->
         <item name="postSplashScreenTheme">@style/Theme.NoteBookCompose</item>
     </style>
