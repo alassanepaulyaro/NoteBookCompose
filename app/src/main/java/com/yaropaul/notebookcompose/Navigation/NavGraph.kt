@@ -3,6 +3,7 @@ package com.yaropaul.notebookcompose.Navigation
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,9 +19,11 @@ import androidx.navigation.navArgument
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import com.yaropaul.notebookcompose.components.DisplayAlertDialog
+import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationScreen
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationViewModel
 import com.yaropaul.notebookcompose.screens.home.HomeScreen
+import com.yaropaul.notebookcompose.screens.home.HomeViewModel
 import com.yaropaul.notebookcompose.utils.Constants.APP_ID
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import io.realm.kotlin.mongodb.App
@@ -29,7 +32,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun SetupNavGraph(startDestination: String, navController: NavHostController) {
+fun SetupNavGraph(
+    startDestination: String,
+    navController: NavHostController,
+    onDataLoaded: () -> Unit
+) {
     NavHost(
         startDestination = startDestination,
         navController = navController
@@ -38,26 +45,36 @@ fun SetupNavGraph(startDestination: String, navController: NavHostController) {
             navigateToHome = {
                 navController.popBackStack()
                 navController.navigate(Screen.Home.route)
-            }
+            },
+            onDataLoaded = onDataLoaded
         )
         homeRoute(
             navigateToWrite = { navController.navigate(Screen.Write.route) },
             navigateToAuth = {
                 navController.popBackStack()
                 navController.navigate(Screen.Authentication.route)
-            }
+            },
+            onDataLoaded = onDataLoaded
         )
         writeRoute()
     }
 }
 
-fun NavGraphBuilder.authenticationRoute(navigateToHome: () -> Unit) {
+fun NavGraphBuilder.authenticationRoute(
+    navigateToHome: () -> Unit,
+    onDataLoaded: () -> Unit
+) {
     composable(route = Screen.Authentication.route) {
         val viewModel: AuthenticationViewModel = viewModel()
         val authenticated by viewModel.authenticated
         val loadingState by viewModel.loadingState
         val onTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
+
+        // splashScreen
+        LaunchedEffect(key1 = Unit) {
+            onDataLoaded()
+        }
 
         AuthenticationScreen(
             authenticated = authenticated,
@@ -91,13 +108,24 @@ fun NavGraphBuilder.authenticationRoute(navigateToHome: () -> Unit) {
 
 fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
-    navigateToAuth: () -> Unit
+    navigateToAuth: () -> Unit,
+    onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
+        val viewModel: HomeViewModel = viewModel()
+        val notes by viewModel.notes
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDialogOpened by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
+
+        // splashScreen
+        LaunchedEffect(key1 = notes) {
+            if (notes !is RequestState.Loading) {
+                onDataLoaded()
+            }
+        }
         HomeScreen(
+            contentNotes = notes,
             drawerState = drawerState,
             onMenuClicked = {
                 scope.launch {
@@ -107,8 +135,9 @@ fun NavGraphBuilder.homeRoute(
             onSignOutClicked = {
                 signOutDialogOpened = true
             },
-            navigateToWrite
+            navigateToWrite = navigateToWrite
         )
+
         DisplayAlertDialog(
             title = "Sign Out",
             message = "Are you sure you want to Sign out from your Google Account",

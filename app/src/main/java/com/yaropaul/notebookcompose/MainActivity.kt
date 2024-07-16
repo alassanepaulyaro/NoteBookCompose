@@ -13,9 +13,12 @@ import com.yaropaul.notebookcompose.utils.Constants.APP_ID
 import io.realm.kotlin.mongodb.App
 
 class MainActivity : ComponentActivity() {
+    var keekSplashScreenOpened = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition{
+            keekSplashScreenOpened
+        }
         //transparent status and navigation bar
         WindowCompat.setDecorFitsSystemWindows(window,false)
         setContent {
@@ -23,7 +26,10 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 SetupNavGraph(
                     startDestination = getStartDestination(),
-                    navController = navController
+                    navController = navController,
+                    onDataLoaded = {
+                        keekSplashScreenOpened = false
+                    }
                 )
             }
         }

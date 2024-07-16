@@ -32,6 +32,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        //Compatibility with Api level 24
+        coreLibraryDesugaringEnabled true
     }
     kotlinOptions {
         jvmTarget = '17'
@@ -102,7 +104,7 @@ dependencies {
     // Message Bar Compose
     implementation 'com.github.stevdza-san:MessageBarCompose:1.0.5'
 
-    // Desugar JDK
+    // Desugar JDK use for compatibility date with api level 24
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }
 kapt { correctErrorTypes true }
