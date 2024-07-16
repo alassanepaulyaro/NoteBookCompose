@@ -68,6 +68,7 @@ fun HomeScreen(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 HomeTopBar(
+                    scrollBehavior = scrollBehavior,
                     onMenuClicked = onMenuClicked
                 )
             },
