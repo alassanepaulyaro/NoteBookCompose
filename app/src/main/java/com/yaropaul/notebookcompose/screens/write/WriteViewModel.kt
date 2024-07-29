@@ -12,12 +12,14 @@ import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
 import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import com.yaropaul.notebookcompose.utils.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
+import java.time.ZonedDateTime
 
 class WriteViewModel(
     private val savedStateHandle: SavedStateHandle
@@ -79,6 +81,10 @@ class WriteViewModel(
         uiState = uiState.copy(selectedNote = noteBook)
     }
 
+    fun updateDateTime(zonedDateTime: ZonedDateTime) {
+        uiState = uiState.copy(updatedDateTime = zonedDateTime.toInstant().toRealmInstant())
+    }
+
     fun upsertNoteBook(
         noteBook: NoteBook,
         onSuccess: () -> Unit,
@@ -99,7 +105,11 @@ class WriteViewModel(
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            val result = MongoDB.insertNote(noteBook = noteBook)
+            val result = MongoDB.insertNote(noteBook = noteBook.apply {
+                if (uiState.updatedDateTime != null) {
+                    date = uiState.updatedDateTime!!
+                }
+            })
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()
