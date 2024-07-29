@@ -209,10 +209,12 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
             onDeleteConfirmed = {},
             onBackPressed = onBackPressed,
             onSaveClicked = {
-                viewModel.insertNoteBook(
-                    noteBook = it.apply { mood =  Mood.values()[pageNumber].name},
+                viewModel.upsertNoteBook(
+                    noteBook = it.apply { mood = Mood.values()[pageNumber].name },
                     onSuccess = { onBackPressed() },
-                    onError = { }
+                    onError = { message ->
+                        Log.e("MongoDbError", message)
+                    }
                 )
             }
         )

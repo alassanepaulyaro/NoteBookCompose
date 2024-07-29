@@ -12,10 +12,12 @@ import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
 import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
+import org.mongodb.kbson.ObjectId
 
 class WriteViewModel(
     private val savedStateHandle: SavedStateHandle
@@ -77,7 +79,21 @@ class WriteViewModel(
         uiState = uiState.copy(selectedNote = noteBook)
     }
 
-    fun insertNoteBook(
+    fun upsertNoteBook(
+        noteBook: NoteBook,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (uiState.selectedNoteId != null) {
+                updateNoteBook(noteBook = noteBook, onSuccess = onSuccess, onError = onError)
+            } else {
+                insertNoteBook(noteBook = noteBook, onSuccess = onSuccess, onError = onError)
+            }
+        }
+    }
+
+    private suspend fun insertNoteBook(
         noteBook: NoteBook,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -95,6 +111,30 @@ class WriteViewModel(
             }
         }
     }
+
+    private suspend fun updateNoteBook(
+        noteBook: NoteBook,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val result = MongoDB.updateNote(noteBook = noteBook.apply {
+            _id = ObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!))
+            date = if (uiState.updatedDateTime != null) {
+                uiState.updatedDateTime!!
+            } else {
+                uiState.selectedNote!!.date
+            }
+        })
+        if (result is RequestState.Success) {
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        } else if (result is RequestState.Error) {
+            withContext(Dispatchers.Main) {
+                onError(result.error.message.toString())
+            }
+        }
+    }
 }
 
 data class UiState(
@@ -102,6 +142,7 @@ data class UiState(
     val selectedNote: NoteBook? = null,
     val title: String = "",
     val description: String = "",
-    val mood: Mood = Mood.Neutral
+    val mood: Mood = Mood.Neutral,
+    val updatedDateTime: RealmInstant? = null
 )
 

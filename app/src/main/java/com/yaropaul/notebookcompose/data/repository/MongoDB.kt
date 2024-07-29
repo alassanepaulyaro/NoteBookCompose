@@ -1,7 +1,5 @@
 package com.yaropaul.notebookcompose.data.repository
 
-import com.yaropaul.notebookcompose.data.repository.MongoDB.realm
-import com.yaropaul.notebookcompose.data.repository.MongoDB.user
 import com.yaropaul.notebookcompose.model.NoteBook
 import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.utils.Constants.APP_ID
@@ -75,10 +73,30 @@ object MongoDB : MongoRepository {
         return if (user != null) {
             realm.write {
                 try {
-                    val addedNote = copyToRealm(noteBook.apply { ownerId= user.identity })
+                    val addedNote = copyToRealm(noteBook.apply { ownerId = user.identity })
                     RequestState.Success(data = addedNote)
                 } catch (e: Exception) {
                     RequestState.Error(e)
+                }
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
+        }
+    }
+
+    override suspend fun updateNote(noteBook: NoteBook): RequestState<NoteBook> {
+        return if (user != null) {
+            realm.write {
+                val queryNote = query<NoteBook>(query = "_id == $0", noteBook._id).first().find()
+                if (queryNote != null) {
+                    queryNote.title = noteBook.title
+                    queryNote.description = noteBook.description
+                    queryNote.mood = noteBook.mood
+                    queryNote.images = noteBook.images
+                    queryNote.date = noteBook.date
+                    RequestState.Success(data = queryNote)
+                } else {
+                    RequestState.Error(error = Exception("Queried note book does not exist."))
                 }
             }
         } else {
