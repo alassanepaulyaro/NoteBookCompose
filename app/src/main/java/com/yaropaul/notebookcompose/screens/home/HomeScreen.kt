@@ -57,6 +57,7 @@ fun HomeScreen(
     onMenuClicked: () -> Unit,
     onSignOutClicked: () -> Unit,
     navigateToWrite: () -> Unit,
+    navigateToWriteWithArgs: (String) -> Unit
 ) {
     var padding by remember { mutableStateOf(PaddingValues()) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -96,7 +97,7 @@ fun HomeScreen(
                         HomeContent(
                             paddingValues = it,
                             contentNotes = contentNotes.data,
-                            onClick = {}
+                            onClick = navigateToWriteWithArgs
                         )
                     }
 
@@ -174,7 +175,7 @@ fun homScreenErrorPreview() {
     // Create instances of RequestState
     val errorState: RequestState<Map<LocalDate, List<NoteBook>>> =
         RequestState.Error(UserNotAuthenticatedException())
-    HomeScreen(contentNotes = errorState, drawerState, {}, {}, {})
+    HomeScreen(contentNotes = errorState, drawerState, {}, {}, {}, {})
 }
 
 @Preview
@@ -184,7 +185,7 @@ fun homScreenSuccessPreview() {
     // Create instances of RequestState
     val successState: RequestState<Map<LocalDate, List<NoteBook>>> =
         RequestState.Success(createNotesMap())
-    HomeScreen(contentNotes = successState, drawerState, {}, {}, {})
+    HomeScreen(contentNotes = successState, drawerState, {}, {}, {}, {})
 }
 
 @Preview
@@ -193,5 +194,5 @@ fun homScreenLoadingPreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     // Create instances of RequestState
     val loadingState: RequestState<Map<LocalDate, List<NoteBook>>> = RequestState.Loading
-    HomeScreen(contentNotes = loadingState, drawerState, {}, {}, {})
+    HomeScreen(contentNotes = loadingState, drawerState, {}, {}, {}, {})
 }
