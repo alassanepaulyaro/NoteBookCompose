@@ -14,6 +14,7 @@ import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
 
 class WriteViewModel(
@@ -43,13 +44,13 @@ class WriteViewModel(
                 viewModelScope.launch(Dispatchers.Main) {
                     val note = MongoDB.getSelectedNote(
                         noteId = BsonObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!))
-                    )
-
-                    if (note is RequestState.Success) {
-                        setSelectedNote(noteBook = note.data)
-                        setTitle(title = note.data.title)
-                        setDescription(description = note.data.description)
-                        setMood(mood = Mood.valueOf(note.data.mood))
+                    ).collect { note ->
+                        if (note is RequestState.Success) {
+                            setSelectedNote(noteBook = note.data)
+                            setTitle(title = note.data.title)
+                            setDescription(description = note.data.description)
+                            setMood(mood = Mood.valueOf(note.data.mood))
+                        }
                     }
                 }
             }
@@ -72,8 +73,27 @@ class WriteViewModel(
         uiState = uiState.copy(mood = mood)
     }
 
-    fun setSelectedNote(noteBook: NoteBook) {
+    private fun setSelectedNote(noteBook: NoteBook) {
         uiState = uiState.copy(selectedNote = noteBook)
+    }
+
+    fun insertNoteBook(
+        noteBook: NoteBook,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val result = MongoDB.insertNote(noteBook = noteBook)
+            if (result is RequestState.Success) {
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } else if (result is RequestState.Error) {
+                withContext(Dispatchers.Main) {
+                    onError(result.error.message.toString())
+                }
+            }
+        }
     }
 }
 

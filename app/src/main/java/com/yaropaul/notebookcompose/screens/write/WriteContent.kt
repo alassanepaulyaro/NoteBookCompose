@@ -1,5 +1,6 @@
 package com.yaropaul.notebookcompose.screens.write
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,18 +36,22 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yaropaul.notebookcompose.model.Mood
+import com.yaropaul.notebookcompose.model.NoteBook
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WriteContent(
+    uiState: UiState,
     pagerState: PagerState,
     title: String,
     onTitleChanged: (String) -> Unit,
     description: String,
     onDescriptionChanged: (String) -> Unit,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onSaveClicked : (NoteBook) -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -134,11 +139,19 @@ fun WriteContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
-                onClick = { },
+                onClick = {
+                    if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()) {
+                            onSaveClicked(NoteBook().apply {
+                                this.title = uiState.title
+                                this.description = uiState.description
+                            })
+                    } else {
+                        Toast.makeText(context, "Field cannot be empty. ", Toast.LENGTH_LONG).show()
+                    }
+                },
                 shape = Shapes().small
             ) {
                 Text(text = "Save")
-
             }
 
         }

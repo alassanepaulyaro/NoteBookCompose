@@ -11,5 +11,6 @@ typealias Notes = RequestState<Map<LocalDate, List<NoteBook>>>
 interface MongoRepository {
     fun configureTheRealm()
     fun getAllNoteBooks(): Flow<Notes>
-    fun getSelectedNote(noteId: ObjectId): RequestState<NoteBook>
+    fun getSelectedNote(noteId: ObjectId): Flow<RequestState<NoteBook>>
+    suspend fun insertNote(noteBook : NoteBook): RequestState<NoteBook>
 }

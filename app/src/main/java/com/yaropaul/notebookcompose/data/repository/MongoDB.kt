@@ -1,5 +1,7 @@
 package com.yaropaul.notebookcompose.data.repository
 
+import com.yaropaul.notebookcompose.data.repository.MongoDB.realm
+import com.yaropaul.notebookcompose.data.repository.MongoDB.user
 import com.yaropaul.notebookcompose.model.NoteBook
 import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.utils.Constants.APP_ID
@@ -55,13 +57,29 @@ object MongoDB : MongoRepository {
         }
     }
 
-    override fun getSelectedNote(noteId: ObjectId): RequestState<NoteBook> {
+    override fun getSelectedNote(noteId: ObjectId): Flow<RequestState<NoteBook>> {
         return if (user != null) {
             try {
-                val note = realm.query<NoteBook>(query = "_id == $0", noteId).find().first()
-                RequestState.Success(data = note)
+                realm.query<NoteBook>(query = "_id == $0", noteId).asFlow().map {
+                    RequestState.Success(data = it.list.first())
+                }
             } catch (e: Exception) {
-                RequestState.Error(e)
+                flow { emit(RequestState.Error(e)) }
+            }
+        } else {
+            flow { emit(RequestState.Error(UserNotAuthenticatedException())) }
+        }
+    }
+
+    override suspend fun insertNote(noteBook: NoteBook): RequestState<NoteBook> {
+        return if (user != null) {
+            realm.write {
+                try {
+                    val addedNote = copyToRealm(noteBook.apply { ownerId= user.identity })
+                    RequestState.Success(data = addedNote)
+                } catch (e: Exception) {
+                    RequestState.Error(e)
+                }
             }
         } else {
             RequestState.Error(UserNotAuthenticatedException())

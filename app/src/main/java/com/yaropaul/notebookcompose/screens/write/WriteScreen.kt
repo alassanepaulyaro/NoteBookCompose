@@ -19,7 +19,8 @@ fun WriteScreen(
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onDeleteConfirmed: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onSaveClicked : (NoteBook) -> Unit
 ) {
 
     // Update the Mood when selecting an existing Note
@@ -38,12 +39,14 @@ fun WriteScreen(
         },
         content = {
             WriteContent(
+                uiState= uiState,
                 pagerState = pagerState ,
                 title = uiState.title,
                 onTitleChanged = onTitleChanged,
                 description = uiState.description,
                 onDescriptionChanged = onDescriptionChanged,
-                paddingValues = it
+                paddingValues = it,
+                onSaveClicked = onSaveClicked
             )
         }
     )
