@@ -27,10 +27,8 @@ import androidx.navigation.navArgument
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import com.yaropaul.notebookcompose.components.DisplayAlertDialog
-import com.yaropaul.notebookcompose.model.GalleryImage
 import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.RequestState
-import com.yaropaul.notebookcompose.model.rememberGalleryState
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationScreen
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationViewModel
 import com.yaropaul.notebookcompose.screens.home.HomeScreen
@@ -200,7 +198,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         val context = LocalContext.current
         val viewModel: WriteViewModel = viewModel()
         val uiState = viewModel.uiState
-        val galleryState = rememberGalleryState()
+        val galleryState = viewModel.galleryState
         val pagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
             Mood.entries.size
         }
@@ -251,11 +249,10 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
                 )
             },
             onImageSelect = {
-                galleryState.addImage(
-                    GalleryImage(
-                        image =  it,
-                        remoteImagePath = ""
-                        )
+                val type = context.contentResolver.getType(it)?.split("/")?.last() ?: "jpg"
+                viewModel.addImage(
+                    image = it,
+                    imageType = type
                 )
             }
         )

@@ -46,6 +46,7 @@ import com.yaropaul.notebookcompose.components.GalleryUploader
 import com.yaropaul.notebookcompose.model.GalleryState
 import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
+import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -175,6 +176,7 @@ fun WriteContent(
                             onSaveClicked(NoteBook().apply {
                                 this.title = uiState.title
                                 this.description = uiState.description
+                                this.images = galleryState.images.map { it.remoteImagePath }.toRealmList()
                             })
                     } else {
                         Toast.makeText(context, "Field cannot be empty. ", Toast.LENGTH_LONG).show()
