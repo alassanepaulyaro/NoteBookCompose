@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.yaropaul.notebookcompose.Navigation.Screen
 import com.yaropaul.notebookcompose.Navigation.SetupNavGraph
 import com.yaropaul.notebookcompose.ui.theme.NoteBookComposeTheme
@@ -13,14 +14,15 @@ import com.yaropaul.notebookcompose.utils.Constants.APP_ID
 import io.realm.kotlin.mongodb.App
 
 class MainActivity : ComponentActivity() {
-    var keekSplashScreenOpened = true
+    private var keepSplashScreenOpened = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().setKeepOnScreenCondition{
-            keekSplashScreenOpened
+            keepSplashScreenOpened
         }
         //transparent status and navigation bar
         WindowCompat.setDecorFitsSystemWindows(window,false)
+        FirebaseApp.initializeApp(this)
         setContent {
             NoteBookComposeTheme {
                 val navController = rememberNavController()
@@ -28,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = getStartDestination(),
                     navController = navController,
                     onDataLoaded = {
-                        keekSplashScreenOpened = false
+                        keepSplashScreenOpened = false
                     }
                 )
             }
