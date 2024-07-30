@@ -14,4 +14,5 @@ interface MongoRepository {
     fun getSelectedNote(noteId: ObjectId): Flow<RequestState<NoteBook>>
     suspend fun insertNote(noteBook : NoteBook): RequestState<NoteBook>
     suspend fun updateNote(noteBook : NoteBook): RequestState<NoteBook>
+    suspend fun deleteNote(id : ObjectId): RequestState<Boolean>
 }

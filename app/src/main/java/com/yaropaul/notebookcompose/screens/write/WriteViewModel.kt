@@ -15,6 +15,7 @@ import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.yaropaul.notebookcompose.utils.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
@@ -46,16 +47,18 @@ class WriteViewModel(
             Log.e("selectedNoteId", "selectedNoteId  :  " + uiState.selectedNoteId)
             viewModelScope.launch() {
                 viewModelScope.launch(Dispatchers.Main) {
-                    val note = MongoDB.getSelectedNote(
+                    MongoDB.getSelectedNote(
                         noteId = BsonObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!))
-                    ).collect { note ->
-                        if (note is RequestState.Success) {
-                            setSelectedNote(noteBook = note.data)
-                            setTitle(title = note.data.title)
-                            setDescription(description = note.data.description)
-                            setMood(mood = Mood.valueOf(note.data.mood))
+                    ).catch {
+                            emit(RequestState.Error(Exception("Note is already deleted.")))
+                        }.collect { note ->
+                            if (note is RequestState.Success) {
+                                setSelectedNote(noteBook = note.data)
+                                setTitle(title = note.data.title)
+                                setDescription(description = note.data.description)
+                                setMood(mood = Mood.valueOf(note.data.mood))
+                            }
                         }
-                    }
                 }
             }
         }
@@ -145,7 +148,28 @@ class WriteViewModel(
             }
         }
     }
+
+    fun deleteNote(
+        onSuccess: () -> Unit, onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (uiState.selectedNoteId != null) {
+                val result =
+                    MongoDB.deleteNote(id = ObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!)))
+                if (result is RequestState.Success) {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                } else if (result is RequestState.Error) {
+                    withContext(Dispatchers.Main) {
+                        onError(result.error.message.toString())
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 data class UiState(
     val selectedNoteId: String? = null,
