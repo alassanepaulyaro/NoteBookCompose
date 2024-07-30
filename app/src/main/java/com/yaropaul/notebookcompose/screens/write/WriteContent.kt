@@ -28,17 +28,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -53,13 +58,19 @@ fun WriteContent(
     onSaveClicked : (NoteBook) -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(key1 = scrollState.maxValue) {
+        scrollState.scrollTo(scrollState.maxValue)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .imePadding()
-            .navigationBarsPadding() //
+            .navigationBarsPadding()
             .padding(top = paddingValues.calculateTopPadding())
             .padding(bottom = 24.dp)
             .padding(horizontal = 24.dp),
@@ -109,6 +120,10 @@ fun WriteContent(
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
+                        scope.launch {
+                            scrollState.animateScrollTo(Int.MAX_VALUE)
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
                     }
                 ),
                 maxLines = 1,
@@ -132,6 +147,7 @@ fun WriteContent(
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
+                        focusManager.clearFocus()
                     }
                 )
             )
