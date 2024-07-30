@@ -1,5 +1,6 @@
 package com.yaropaul.notebookcompose.screens.write
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.yaropaul.notebookcompose.components.GalleryUploader
+import com.yaropaul.notebookcompose.model.GalleryState
 import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
 import kotlinx.coroutines.launch
@@ -50,12 +53,14 @@ import kotlinx.coroutines.launch
 fun WriteContent(
     uiState: UiState,
     pagerState: PagerState,
+    galleryState: GalleryState,
     title: String,
     onTitleChanged: (String) -> Unit,
     description: String,
     onDescriptionChanged: (String) -> Unit,
     paddingValues: PaddingValues,
-    onSaveClicked : (NoteBook) -> Unit
+    onSaveClicked : (NoteBook) -> Unit,
+    onImageSelect: (Uri) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -93,7 +98,7 @@ fun WriteContent(
                     AsyncImage(
                         modifier = Modifier.size(120.dp),
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(Mood.values()[page].icon)
+                            .data(Mood.entries[page].icon)
                             .crossfade(enable = true)
                             .build(),
                         contentScale = ContentScale.Fit,
@@ -154,6 +159,12 @@ fun WriteContent(
         }
 
         Column(verticalArrangement = Arrangement.Bottom) {
+            Spacer(modifier = Modifier.height(12.dp))
+            GalleryUploader(
+                galleryState = galleryState,
+                onAddClicked = { },
+                onImageSelect = onImageSelect,
+                onImageClicked = {})
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier

@@ -27,8 +27,10 @@ import androidx.navigation.navArgument
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import com.yaropaul.notebookcompose.components.DisplayAlertDialog
+import com.yaropaul.notebookcompose.model.GalleryImage
 import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.RequestState
+import com.yaropaul.notebookcompose.model.rememberGalleryState
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationScreen
 import com.yaropaul.notebookcompose.screens.auth.AuthenticationViewModel
 import com.yaropaul.notebookcompose.screens.home.HomeScreen
@@ -194,8 +196,9 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         val context = LocalContext.current
         val viewModel: WriteViewModel = viewModel()
         val uiState = viewModel.uiState
+        val galleryState = rememberGalleryState()
         val pagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
-            Mood.values().size
+            Mood.entries.size
         }
         val pageNumber by remember { derivedStateOf { pagerState.currentPage } }
 
@@ -205,8 +208,9 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
 
         WriteScreen(
             uiState = uiState,
-            moodName = { Mood.values()[pageNumber].name },
+            moodName = { Mood.entries[pageNumber].name },
             pagerState = pagerState,
+            galleryState = galleryState,
             onTitleChanged = { viewModel.setTitle(title = it) },
             onDescriptionChanged = { viewModel.setDescription(description = it) },
             onDeleteConfirmed = {
@@ -231,7 +235,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
             onBackPressed = onBackPressed,
             onSaveClicked = {
                 viewModel.upsertNoteBook(
-                    noteBook = it.apply { mood = Mood.values()[pageNumber].name },
+                    noteBook = it.apply { mood = Mood.entries[pageNumber].name },
                     onSuccess = { onBackPressed() },
                     onError = { message ->
                         Toast.makeText(
@@ -240,6 +244,14 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                )
+            },
+            onImageSelect = {
+                galleryState.addImage(
+                    GalleryImage(
+                        image =  it,
+                        remoteImagePath = ""
+                        )
                 )
             }
         )
