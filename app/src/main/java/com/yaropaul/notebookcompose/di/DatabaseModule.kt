@@ -23,11 +23,16 @@ object DatabaseModule {
             context = context,
             klass = ImagesDatabase::class.java,
             name = IMAGES_DATABASE
-        ).build()
+        ).fallbackToDestructiveMigration()
+         .build()
     }
 
     @Singleton
     @Provides
     fun provideFirstDao(database: ImagesDatabase) = database.imageToUploadDao()
+
+    @Singleton
+    @Provides
+    fun provideSecondDao(database: ImagesDatabase) = database.imageToDeleteDao()
 
 }

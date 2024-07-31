@@ -11,7 +11,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.yaropaul.notebookcompose.data.database.ImageToDeleteDao
 import com.yaropaul.notebookcompose.data.database.ImageToUploadDao
+import com.yaropaul.notebookcompose.data.database.entity.ImageToDelete
 import com.yaropaul.notebookcompose.data.database.entity.ImageToUpload
 import com.yaropaul.notebookcompose.data.repository.MongoDB
 import com.yaropaul.notebookcompose.model.GalleryImage
@@ -36,7 +38,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WriteViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val imageToUploadDao: ImageToUploadDao
+    private val imageToUploadDao: ImageToUploadDao,
+    private val imageToDeleteDao: ImageToDeleteDao
 ) : ViewModel() {
 
     val galleryState = GalleryState()
@@ -245,12 +248,24 @@ class WriteViewModel @Inject constructor(
         if (images != null) {
             images.forEach { remotePath ->
                 storage.child(remotePath).delete()
+                    .addOnFailureListener {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            imageToDeleteDao.addImageToDelete(
+                                ImageToDelete(remoteImagePath = remotePath)
+                            )
+                        }
+                    }
             }
         } else {
-            galleryState.imagesToBeDeleted
-                .map { it.remoteImagePath }
-                .forEach { remotePath ->
+            galleryState.imagesToBeDeleted.map { it.remoteImagePath }.forEach { remotePath ->
                 storage.child(remotePath).delete()
+                    .addOnFailureListener {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            imageToDeleteDao.addImageToDelete(
+                                ImageToDelete(remoteImagePath = remotePath)
+                            )
+                        }
+                    }
             }
         }
     }
