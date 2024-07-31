@@ -129,7 +129,7 @@ fun NoteBookHolder(noteBook: NoteBook, onClick: (String) -> Unit) {
                 }
                 // animate gallery
                 AnimatedVisibility(
-                    visible = galleryOpened,
+                    visible = galleryOpened && !galleryLoading,
                     enter = fadeIn() + expandVertically(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,

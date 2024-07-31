@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -37,6 +38,7 @@ import com.yaropaul.notebookcompose.screens.write.WriteScreen
 import com.yaropaul.notebookcompose.screens.write.WriteViewModel
 import com.yaropaul.notebookcompose.utils.Constants.APP_ID
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -196,7 +198,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         })
     ) {
         val context = LocalContext.current
-        val viewModel: WriteViewModel = viewModel()
+        val viewModel: WriteViewModel = hiltViewModel()
         val uiState = viewModel.uiState
         val galleryState = viewModel.galleryState
         val pagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) {
