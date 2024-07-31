@@ -193,6 +193,7 @@ class WriteViewModel @Inject constructor(
                     MongoDB.deleteNote(id = ObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!)))
                 if (result is RequestState.Success) {
                     withContext(Dispatchers.Main) {
+                        uiState.selectedNote?.let { deleteImagesFromFirebase(images = it.images) }
                         onSuccess()
                     }
                 } else if (result is RequestState.Error) {
@@ -233,6 +234,13 @@ class WriteViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun deleteImagesFromFirebase(images: List<String>) {
+        val storage = FirebaseStorage.getInstance().reference
+        images.forEach { remotePath ->
+            storage.child(remotePath).delete()
         }
     }
 }
