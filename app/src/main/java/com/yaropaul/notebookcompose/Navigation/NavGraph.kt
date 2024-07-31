@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.yaropaul.notebookcompose.Navigation
 
 import android.util.Log
@@ -38,7 +36,6 @@ import com.yaropaul.notebookcompose.screens.write.WriteScreen
 import com.yaropaul.notebookcompose.screens.write.WriteViewModel
 import com.yaropaul.notebookcompose.utils.Constants.APP_ID
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -256,7 +253,8 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
                     image = it,
                     imageType = type
                 )
-            }
+            },
+            onImageDeleteClicked = {}
         )
     }
 }

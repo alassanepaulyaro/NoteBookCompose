@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yaropaul.notebookcompose.components.GalleryUploader
+import com.yaropaul.notebookcompose.model.GalleryImage
 import com.yaropaul.notebookcompose.model.GalleryState
 import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
@@ -60,8 +61,9 @@ fun WriteContent(
     description: String,
     onDescriptionChanged: (String) -> Unit,
     paddingValues: PaddingValues,
-    onSaveClicked : (NoteBook) -> Unit,
-    onImageSelect: (Uri) -> Unit
+    onSaveClicked: (NoteBook) -> Unit,
+    onImageSelect: (Uri) -> Unit,
+    onImageClicked: (GalleryImage) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -163,9 +165,10 @@ fun WriteContent(
             Spacer(modifier = Modifier.height(12.dp))
             GalleryUploader(
                 galleryState = galleryState,
-                onAddClicked = {focusManager.clearFocus()},
+                onAddClicked = { focusManager.clearFocus() },
                 onImageSelect = onImageSelect,
-                onImageClicked = {})
+                onImageClicked = onImageClicked
+            )
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier
@@ -173,11 +176,12 @@ fun WriteContent(
                     .height(54.dp),
                 onClick = {
                     if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()) {
-                            onSaveClicked(NoteBook().apply {
-                                this.title = uiState.title
-                                this.description = uiState.description
-                                this.images = galleryState.images.map { it.remoteImagePath }.toRealmList()
-                            })
+                        onSaveClicked(NoteBook().apply {
+                            this.title = uiState.title
+                            this.description = uiState.description
+                            this.images =
+                                galleryState.images.map { it.remoteImagePath }.toRealmList()
+                        })
                     } else {
                         Toast.makeText(context, "Field cannot be empty. ", Toast.LENGTH_LONG).show()
                     }
