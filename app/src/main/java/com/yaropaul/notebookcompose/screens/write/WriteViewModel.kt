@@ -1,7 +1,6 @@
 package com.yaropaul.notebookcompose.screens.write
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +8,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.yaropaul.notebookcompose.data.repository.MongoDB
 import com.yaropaul.notebookcompose.model.GalleryImage
@@ -17,6 +18,7 @@ import com.yaropaul.notebookcompose.model.Mood
 import com.yaropaul.notebookcompose.model.NoteBook
 import com.yaropaul.notebookcompose.model.RequestState
 import com.yaropaul.notebookcompose.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import com.yaropaul.notebookcompose.utils.fetchImagesFromFirebase
 import com.yaropaul.notebookcompose.utils.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +52,6 @@ class WriteViewModel(
 
     private fun fetchSelectedNote() {
         if (uiState.selectedNoteId != null) {
-            Log.e("selectedNoteId", "selectedNoteId  :  " + uiState.selectedNoteId)
             viewModelScope.launch() {
                 viewModelScope.launch(Dispatchers.Main) {
                     MongoDB.getSelectedNote(
@@ -63,11 +64,31 @@ class WriteViewModel(
                             setTitle(title = note.data.title)
                             setDescription(description = note.data.description)
                             setMood(mood = Mood.valueOf(note.data.mood))
+
+                            fetchImagesFromFirebase(
+                                remoteImagePaths = note.data.images,
+                                onImageDownload = { downloadedImage ->
+                                    galleryState.addImage(
+                                        GalleryImage(
+                                            image = downloadedImage,
+                                            remoteImagePath = extractImagePath(
+                                                fullImageUrl = downloadedImage.toString()
+                                            ),
+                                        )
+                                    )
+                                }
+                            )
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun extractImagePath(fullImageUrl: String): String {
+        val chunks = fullImageUrl.split("%2F")
+        val imageName = chunks[2].split("?").first()
+        return "images/${Firebase.auth.currentUser?.uid}/$imageName"
     }
 
     private fun bsonObjectIdToString(objectId: String): String {
