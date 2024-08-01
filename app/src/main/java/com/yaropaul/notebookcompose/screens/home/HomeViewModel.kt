@@ -17,8 +17,11 @@ import com.yaropaul.notebookcompose.data.repository.Notes
 import com.yaropaul.notebookcompose.model.RequestState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,19 +29,48 @@ class HomeViewModel @Inject constructor(
     private val connectivity: NetworkConnectivityObserver,
     private val imageToDeleteDao: ImageToDeleteDao
 ) : ViewModel() {
+
+    private lateinit var allNotesJob: Job
+    private lateinit var filteredNotesJob: Job
     var notes: MutableState<Notes> = mutableStateOf(RequestState.Idle)
     private var network by mutableStateOf(ConnectivityObserver.Status.Unavailable)
+    var dateIsSelected by mutableStateOf(false)
+        private set
 
     init {
-        observeAllNoteBook()
+        getNotes()
         viewModelScope.launch {
             connectivity.observe().collect { network = it }
         }
     }
 
+    fun getNotes(zonedDateTime: ZonedDateTime? = null) {
+        dateIsSelected = zonedDateTime != null
+        notes.value = RequestState.Loading
+        if (dateIsSelected && zonedDateTime != null) {
+            observeFilteredNotes(zonedDateTime = zonedDateTime)
+        } else {
+            observeAllNoteBook()
+        }
+    }
+
     private fun observeAllNoteBook() {
-        viewModelScope.launch {
+        allNotesJob = viewModelScope.launch {
+            if (::filteredNotesJob.isInitialized) {
+                filteredNotesJob.cancelAndJoin()
+            }
             MongoDB.getAllNoteBooks().collect { result ->
+                notes.value = result
+            }
+        }
+    }
+
+    private fun observeFilteredNotes(zonedDateTime: ZonedDateTime) {
+        filteredNotesJob = viewModelScope.launch {
+            if (::allNotesJob.isInitialized) {
+                allNotesJob.cancelAndJoin()
+            }
+            MongoDB.getFilteredNotes(zonedDateTime = zonedDateTime).collect { result ->
                 notes.value = result
             }
         }

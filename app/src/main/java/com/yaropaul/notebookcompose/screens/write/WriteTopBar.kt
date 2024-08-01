@@ -59,7 +59,7 @@ fun WriteTopBar(
     var currentDate by remember { mutableStateOf(LocalDate.now()) }
     var currentTime by remember { mutableStateOf(LocalTime.now()) }
     val dateDialog = rememberSheetState()
-    var timeDialog = rememberSheetState()
+    val timeDialog = rememberSheetState()
     var dateTimeUpdated by remember { mutableStateOf(false) }
     val formatedDate = remember(key1 = currentDate) {
         DateTimeFormatter
@@ -75,7 +75,7 @@ fun WriteTopBar(
     val selectedNoteDateTime = remember(selectedNote) {
         if (selectedNote != null) {
             SimpleDateFormat("dd MMM yyy, hh:mm a", Locale.getDefault())
-                .format(Date.from(selectedNote?.date?.toInstant())).uppercase()
+                .format(Date.from(selectedNote.date.toInstant())).uppercase()
         } else {
             "Unknown"
         }

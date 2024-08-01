@@ -158,6 +158,9 @@ fun NavGraphBuilder.homeRoute(
                     drawerState.open()
                 }
             },
+            dateIsSelected = viewModel.dateIsSelected,
+            onDateSelected = { viewModel.getNotes(zonedDateTime = it) },
+            onDateReset = { viewModel.getNotes() },
             onSignOutClicked = {
                 signOutDialogOpened = true
             },
