@@ -107,18 +107,34 @@ object MongoDB : MongoRepository {
     override suspend fun deleteNote(id: ObjectId): RequestState<Boolean> {
         return if (user != null) {
             realm.write {
-                val diary =
+                val note =
                     query<NoteBook>(query = "_id == $0 AND ownerId == $1", id, user.id)
                         .first().find()
-                if (diary != null) {
+                if (note != null) {
                     try {
-                        delete(diary)
+                        delete(note)
                         RequestState.Success(data = true)
                     } catch (e: Exception) {
                         RequestState.Error(e)
                     }
                 } else {
-                    RequestState.Error(Exception("Diary does not exist."))
+                    RequestState.Error(Exception("Note does not exist."))
+                }
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
+        }
+    }
+
+    override suspend fun deleteAllNotes(): RequestState<Boolean> {
+        return if (user != null) {
+            realm.write {
+                val diaries = this.query<NoteBook>("ownerId == $0", user.id).find()
+                try {
+                    delete(diaries)
+                    RequestState.Success(data = true)
+                } catch (e: Exception) {
+                    RequestState.Error(e)
                 }
             }
         } else {

@@ -2,6 +2,7 @@ package com.yaropaul.notebookcompose.di
 
 import android.content.Context
 import androidx.room.Room
+import com.yaropaul.notebookcompose.connectivity.NetworkConnectivityObserver
 import com.yaropaul.notebookcompose.data.database.ImagesDatabase
 import com.yaropaul.notebookcompose.utils.Constants.IMAGES_DATABASE
 import dagger.Module
@@ -35,4 +36,9 @@ object DatabaseModule {
     @Provides
     fun provideSecondDao(database: ImagesDatabase) = database.imageToDeleteDao()
 
+    @Singleton
+    @Provides
+    fun provideNetworkConnectivityObserver(
+        @ApplicationContext context: Context
+    ) = NetworkConnectivityObserver(context = context)
 }

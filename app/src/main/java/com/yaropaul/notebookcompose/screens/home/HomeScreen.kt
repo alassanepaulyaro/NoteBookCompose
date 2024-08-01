@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
@@ -56,6 +57,7 @@ fun HomeScreen(
     drawerState: DrawerState,
     onMenuClicked: () -> Unit,
     onSignOutClicked: () -> Unit,
+    onDeleteAllClicked: () -> Unit,
     navigateToWrite: () -> Unit,
     navigateToWriteWithArgs: (String) -> Unit
 ) {
@@ -64,6 +66,7 @@ fun HomeScreen(
     NavigationDrawer(
         drawerState = drawerState,
         onSignOutClicked = onSignOutClicked,
+        onDeleteAllClicked =  onDeleteAllClicked
     ) {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -82,7 +85,7 @@ fun HomeScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "New Diary Icon"
+                        contentDescription = "New Note Icon"
                     )
                 }
             },
@@ -129,6 +132,7 @@ fun HomeScreen(
 fun NavigationDrawer(
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit,
+    onDeleteAllClicked: () -> Unit,
     content: @Composable () -> Unit
 ) {
     ModalNavigationDrawer(
@@ -161,6 +165,25 @@ fun NavigationDrawer(
                         selected = false,
                         onClick = onSignOutClicked
                     )
+
+                    NavigationDrawerItem(
+                        label = {
+                            Row(modifier = Modifier.padding(horizontal = 12.dp)) {
+                                Icon(
+                                   imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete All Icon",
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "Delete All Notes",
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        },
+                        selected = false,
+                        onClick = onDeleteAllClicked
+                    )
                 })
         },
         content = content
@@ -170,29 +193,29 @@ fun NavigationDrawer(
 
 @Preview
 @Composable
-fun homScreenErrorPreview() {
+fun HomScreenErrorPreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     // Create instances of RequestState
     val errorState: RequestState<Map<LocalDate, List<NoteBook>>> =
         RequestState.Error(UserNotAuthenticatedException())
-    HomeScreen(contentNotes = errorState, drawerState, {}, {}, {}, {})
+    HomeScreen(contentNotes = errorState, drawerState, {}, {}, {}, {}, {})
 }
 
 @Preview
 @Composable
-fun homScreenSuccessPreview() {
+fun HomScreenSuccessPreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     // Create instances of RequestState
     val successState: RequestState<Map<LocalDate, List<NoteBook>>> =
         RequestState.Success(createNotesMap())
-    HomeScreen(contentNotes = successState, drawerState, {}, {}, {}, {})
+    HomeScreen(contentNotes = successState, drawerState, {}, {}, {}, {}, {})
 }
 
 @Preview
 @Composable
-fun homScreenLoadingPreview() {
+fun HomScreenLoadingPreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     // Create instances of RequestState
     val loadingState: RequestState<Map<LocalDate, List<NoteBook>>> = RequestState.Loading
-    HomeScreen(contentNotes = loadingState, drawerState, {}, {}, {}, {})
+    HomeScreen(contentNotes = loadingState, drawerState, {}, {}, {}, {}, {})
 }

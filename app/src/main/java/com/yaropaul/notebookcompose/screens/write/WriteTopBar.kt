@@ -198,7 +198,7 @@ fun DeleteNoteAction(
         title = "Delete",
         message = "Are you sure you want to permanently delete this note '${selectedNote?.title}'?",
         dialogOpened = openDialog,
-        onDialogClose = {
+        onDialogClosed = {
             openDialog = false
         },
         onYesClicked = onDeleteConfirmed

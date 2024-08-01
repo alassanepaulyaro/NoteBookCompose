@@ -67,7 +67,7 @@ fun HomeContent(
 
 @Composable
 fun EmptyPage(
-    title: String = "Empty Diary",
+    title: String = "Empty Note",
     subtitle: String = "Write Something"
 ) {
     Column(

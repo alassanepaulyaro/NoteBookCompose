@@ -136,11 +136,13 @@ fun NavGraphBuilder.homeRoute(
     onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
-        val viewModel: HomeViewModel = viewModel()
+        val viewModel: HomeViewModel = hiltViewModel()
         val notes by viewModel.notes
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDialogOpened by remember { mutableStateOf(false) }
+        var deleteAllDialogOpened by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
+        val context = LocalContext.current
 
         // splashScreen
         LaunchedEffect(key1 = notes) {
@@ -159,6 +161,9 @@ fun NavGraphBuilder.homeRoute(
             onSignOutClicked = {
                 signOutDialogOpened = true
             },
+            onDeleteAllClicked = {
+                deleteAllDialogOpened = true
+            },
             navigateToWrite = navigateToWrite,
             navigateToWriteWithArgs = navigateToWriteWithArgs
         )
@@ -167,7 +172,7 @@ fun NavGraphBuilder.homeRoute(
             title = "Sign Out",
             message = "Are you sure you want to Sign out from your Google Account",
             dialogOpened = signOutDialogOpened,
-            onDialogClose = { signOutDialogOpened = false },
+            onDialogClosed = { signOutDialogOpened = false },
             onYesClicked = {
                 scope.launch(Dispatchers.IO) {
                     val user = App.create(APP_ID).currentUser
@@ -178,6 +183,39 @@ fun NavGraphBuilder.homeRoute(
                         }
                     }
                 }
+            }
+        )
+
+        DisplayAlertDialog(
+            title = "Delete All Notes",
+            message = "Are you sure you want to permanently delete all your Notes?",
+            dialogOpened = deleteAllDialogOpened,
+            onDialogClosed = { deleteAllDialogOpened = false },
+            onYesClicked = {
+                viewModel.deleteAllNotes(
+                    onSuccess = {
+                        Toast.makeText(
+                            context,
+                            "All Notes Deleted.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    },
+                    onError = {
+                        Toast.makeText(
+                            context,
+                            if (it.message == "No Internet Connection.")
+                                "We need an Internet Connection for this operation."
+                            else it.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
+                )
             }
         )
     }
@@ -204,7 +242,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         val pageNumber by remember { derivedStateOf { pagerState.currentPage } }
 
         LaunchedEffect(key1 = uiState) {
-            Log.e("SelectedDiary", "${uiState.selectedNoteId}")
+            Log.e("SelectedNote", "${uiState.selectedNoteId}")
         }
 
         WriteScreen(
