@@ -8,7 +8,7 @@ import com.yaropaul.notebookcompose.data.database.entity.ImageToUpload
 @Database(
     entities = [ImageToUpload::class, ImageToDelete::class],
     version = 2,
-    exportSchema = true
+    exportSchema = false
 )
 abstract class ImagesDatabase: RoomDatabase() {
     abstract fun imageToUploadDao(): ImageToUploadDao
