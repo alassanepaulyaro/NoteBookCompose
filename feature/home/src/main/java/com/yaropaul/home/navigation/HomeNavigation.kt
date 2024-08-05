@@ -33,7 +33,7 @@ fun NavGraphBuilder.homeRoute(
 ) {
     composable(route = Screen.Home.route) {
         val viewModel: HomeViewModel = hiltViewModel()
-        val notes = viewModel.notes
+        val notes by viewModel.notes
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDialogOpened by remember { mutableStateOf(false) }
         var deleteAllDialogOpened by remember { mutableStateOf(false) }
@@ -42,12 +42,12 @@ fun NavGraphBuilder.homeRoute(
 
         // splashScreen
         LaunchedEffect(key1 = notes) {
-            if (notes.value !is RequestState.Loading) {
+            if (notes !is RequestState.Loading) {
                 onDataLoaded()
             }
         }
         HomeScreen(
-            contentNotes = notes.value,
+            contentNotes = notes,
             drawerState = drawerState,
             onMenuClicked = {
                 scope.launch {

@@ -27,7 +27,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -47,8 +46,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.activity.compose)
     implementation (libs.androidx.ui.tooling.preview)
-    // Desugar JDK use for compatibility date with api level 24
-    coreLibraryDesugaring (libs.desugar.jdk.libs)
     // Realm with Device Sync and using coroutines
     implementation (libs.library.sync)
     implementation (libs.kotlinx.coroutines.core)

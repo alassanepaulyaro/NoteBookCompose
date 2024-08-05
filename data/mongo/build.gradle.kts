@@ -29,7 +29,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -56,10 +55,6 @@ dependencies {
     implementation (libs.androidx.room.runtime)
     kapt (libs.androidx.room.compiler)
     implementation (libs.androidx.room.ktx)
-
-    // Desugar JDK use for compatibility date with api level 24
-    coreLibraryDesugaring (libs.desugar.jdk.libs)
-
     // Modularization
     implementation(project(":core:util"))
 }

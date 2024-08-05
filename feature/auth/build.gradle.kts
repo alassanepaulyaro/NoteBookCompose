@@ -27,8 +27,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        //Compatibility with Api level 24
-        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -59,8 +57,6 @@ dependencies {
     implementation (libs.onetapcompose)
     // Message Bar Compose
     implementation (libs.messagebarcompose)
-    // Desugar JDK use for compatibility date with api level 24
-    coreLibraryDesugaring (libs.desugar.jdk.libs)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

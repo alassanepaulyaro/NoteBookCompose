@@ -33,7 +33,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeContent(
+internal fun HomeContent(
     paddingValues: PaddingValues,
     contentNotes: Map<LocalDate, List<NoteBook>>,
     onClick: (String) -> Unit
@@ -63,7 +63,7 @@ fun HomeContent(
 }
 
 @Composable
-fun EmptyPage(
+internal fun EmptyPage(
     title: String = "Empty Note",
     subtitle: String = "Write Something"
 ) {
@@ -92,7 +92,7 @@ fun EmptyPage(
 }
 
 @Composable
-fun DateHeader(localDate: LocalDate) {
+internal fun DateHeader(localDate: LocalDate) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

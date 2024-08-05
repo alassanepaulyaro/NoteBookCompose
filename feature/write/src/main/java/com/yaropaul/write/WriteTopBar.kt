@@ -1,5 +1,6 @@
 package com.yaropaul.write
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -47,9 +48,10 @@ import java.util.Date
 import java.util.Locale
 
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WriteTopBar(
+internal fun WriteTopBar(
     selectedNote: NoteBook?,
     moodName: () -> String,
     onDateTimeUpdated: (ZonedDateTime) -> Unit,
@@ -177,7 +179,7 @@ fun WriteTopBar(
 }
 
 @Composable
-fun DeleteNoteAction(
+internal fun DeleteNoteAction(
     selectedNote: NoteBook?,
     onDeleteConfirmed: () -> Unit
 ) {
