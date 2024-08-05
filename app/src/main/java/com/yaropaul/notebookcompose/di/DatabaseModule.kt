@@ -2,9 +2,9 @@ package com.yaropaul.notebookcompose.di
 
 import android.content.Context
 import androidx.room.Room
-import com.yaropaul.notebookcompose.connectivity.NetworkConnectivityObserver
-import com.yaropaul.notebookcompose.data.database.ImagesDatabase
-import com.yaropaul.notebookcompose.utils.Constants.IMAGES_DATABASE
+import com.yaropaul.mongo.database.ImagesDatabase
+import com.yaropaul.util.Constants.IMAGES_DATABASE
+import com.yaropaul.util.connectivity.NetworkConnectivityObserver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

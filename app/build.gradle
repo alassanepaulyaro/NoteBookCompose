@@ -1,20 +1,20 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id 'kotlin-kapt'
     alias(libs.plugins.dagger.hilt)
-    id 'io.realm.kotlin'
     alias(libs.plugins.google.gms.google.services)
+    id ("io.realm.kotlin")
+    id ("kotlin-kapt")
 }
 
 android {
     namespace 'com.yaropaul.notebookcompose'
-    compileSdk 34
+    compileSdk ProjectConfig.compileSdk
 
     defaultConfig {
         applicationId "com.yaropaul.notebookcompose"
-        minSdk 24
-        targetSdk 34
+        minSdk ProjectConfig.minSdk
+        targetSdk ProjectConfig.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -40,10 +40,10 @@ android {
         jvmTarget = '17'
     }
     buildFeatures {
-        compose true
+        compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.1'
+        kotlinCompilerExtensionVersion = ProjectConfig.extensionVersion
     }
     packaging {
         resources {
@@ -61,7 +61,6 @@ dependencies {
     implementation libs.androidx.ui
     implementation libs.androidx.ui.graphics
     implementation libs.androidx.ui.tooling.preview
-    implementation libs.androidx.material3
     implementation libs.firebase.auth
     implementation libs.firebase.storage.ktx
     testImplementation libs.junit
@@ -118,6 +117,14 @@ dependencies {
 
     // CLOCK
     implementation libs.clock
+
+    // Modularization
+    implementation(project(":core:ui"))
+    implementation(project(":core:util"))
+    implementation(project(":data:mongo"))
+    implementation(project(":feature:auth"))
+    implementation(project(":feature:home"))
+    implementation(project(":feature:write"))
 
 }
 kapt { correctErrorTypes true }
