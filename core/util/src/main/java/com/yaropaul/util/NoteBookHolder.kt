@@ -90,7 +90,8 @@ fun NoteBookHolder(noteBook: NoteBook, onClick: (String) -> Unit) {
     Row(modifier = Modifier.clickable(indication = null, interactionSource = remember {
         MutableInteractionSource()
     }) {
-        onClick(noteBook._id.toString())
+        //convert value to toHexString
+        onClick(noteBook._id.toHexString())
     }) {
         Spacer(modifier = Modifier.width(14.dp))
         Surface(

@@ -1,5 +1,6 @@
 package com.yaropaul.mongo.repository
 
+import android.annotation.SuppressLint
 import com.yaropaul.util.Constants.APP_ID
 import com.yaropaul.util.model.NoteBook
 import com.yaropaul.util.model.RequestState
@@ -14,7 +15,7 @@ import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import org.mongodb.kbson.ObjectId
+import org.mongodb.kbson.BsonObjectId
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
@@ -59,7 +60,7 @@ object MongoDB : MongoRepository {
         }
     }
 
-    override fun getSelectedNote(noteId: ObjectId): Flow<RequestState<NoteBook>> {
+    override fun getSelectedNote(noteId: BsonObjectId): Flow<RequestState<NoteBook>> {
         return if (user != null) {
             try {
                 realm.query<NoteBook>(query = "_id == $0", noteId).asFlow().map {
@@ -108,7 +109,7 @@ object MongoDB : MongoRepository {
         }
     }
 
-    override suspend fun deleteNote(id: ObjectId): RequestState<Boolean> {
+    override suspend fun deleteNote(id: BsonObjectId): RequestState<Boolean> {
         return if (user != null) {
             realm.write {
                 val note =
@@ -146,6 +147,7 @@ object MongoDB : MongoRepository {
         }
     }
 
+    @SuppressLint("NewApi")
     override fun getFilteredNotes(zonedDateTime: ZonedDateTime): Flow<Notes> {
         return if (user != null) {
             try {

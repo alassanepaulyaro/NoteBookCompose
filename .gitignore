@@ -24,4 +24,4 @@ output.json
 *.log
 .idea/
 app/google-services.json
-/buildSrc/build/
+/buildSrc/build/**

@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.BsonObjectId
-import org.mongodb.kbson.ObjectId
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
@@ -65,7 +64,7 @@ internal class WriteViewModel @Inject constructor(
             viewModelScope.launch() {
                 viewModelScope.launch(Dispatchers.Main) {
                     MongoDB.getSelectedNote(
-                        noteId = BsonObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!))
+                        noteId = BsonObjectId.invoke(uiState.selectedNoteId!!)
                     ).catch {
                         emit(RequestState.Error(Exception("Note is already deleted.")))
                     }.collect { note ->
@@ -99,10 +98,6 @@ internal class WriteViewModel @Inject constructor(
         val chunks = fullImageUrl.split("%2F")
         val imageName = chunks[2].split("?").first()
         return "images/${Firebase.auth.currentUser?.uid}/$imageName"
-    }
-
-    private fun bsonObjectIdToString(objectId: String): String {
-        return objectId.removePrefix("BsonObjectId(").removeSuffix(")")
     }
 
     fun setTitle(title: String) {
@@ -170,7 +165,7 @@ internal class WriteViewModel @Inject constructor(
         onError: (String) -> Unit
     ) {
         val result = MongoDB.updateNote(noteBook = noteBook.apply {
-            _id = ObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!))
+            _id = BsonObjectId.invoke(uiState.selectedNoteId!!)
             date = if (uiState.updatedDateTime != null) {
                 uiState.updatedDateTime!!
             } else {
@@ -198,7 +193,7 @@ internal class WriteViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (uiState.selectedNoteId != null) {
                 val result =
-                    MongoDB.deleteNote(id = ObjectId.invoke(bsonObjectIdToString(uiState.selectedNoteId!!)))
+                    MongoDB.deleteNote(id = BsonObjectId.invoke(uiState.selectedNoteId!!))
                 if (result is RequestState.Success) {
                     withContext(Dispatchers.Main) {
                         uiState.selectedNote?.let { deleteImagesFromFirebase(images = it.images) }
