@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("io.realm.kotlin")
+    alias(libs.plugins.realm.kotin)
 }
 
 android {

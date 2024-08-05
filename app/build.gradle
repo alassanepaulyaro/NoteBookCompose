@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.google.gms.google.services)
-    id ("io.realm.kotlin")
-    id ("kotlin-kapt")
+    alias(libs.plugins.realm.kotin)
+    alias(libs.plugins.devtool.ksp)
 }
 
 android {
@@ -80,7 +80,7 @@ dependencies {
 
     // Dagger Hilt
     implementation libs.hilt.android
-    kapt libs.hilt.compiler
+    ksp libs.hilt.compiler
     implementation libs.androidx.hilt.navigation.compose
 
     // Compose Navigation
@@ -88,7 +88,7 @@ dependencies {
 
     // Room components
     implementation libs.androidx.room.runtime
-    kapt libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
     implementation libs.androidx.room.ktx
 
     // Runtime Compose
@@ -96,9 +96,6 @@ dependencies {
 
     // Coil
     implementation libs.coil.compose
-
-    // Pager - Accompanist
-    implementation libs.accompanist.pager
 
     // One-Tap Compose
     implementation libs.onetapcompose
@@ -127,4 +124,3 @@ dependencies {
     implementation(project(":feature:write"))
 
 }
-kapt { correctErrorTypes true }

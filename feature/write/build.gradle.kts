@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.dagger.hilt)
-    id ("io.realm.kotlin")
-    id ("kotlin-kapt")
+    alias(libs.plugins.realm.kotin)
+    alias(libs.plugins.devtool.ksp)
 }
 
 android {
@@ -50,7 +50,7 @@ dependencies {
     implementation (libs.androidx.ui.tooling.preview)
     // Dagger Hilt
     implementation (libs.hilt.android)
-    kapt (libs.hilt.compiler)
+    ksp (libs.hilt.compiler)
     implementation (libs.androidx.hilt.navigation.compose)
     // Realm with Device Sync and using coroutines
     implementation (libs.library.sync)
