@@ -1,49 +1,42 @@
-# Notebook Android Project
+# NoteBookCompose
 
-## Kotlin
+**NoteBookCompose** is an application designed to create and manage notes using the modern Jetpack Compose UI toolkit. It allows you to take notes, organize them, and easily view or edit them.
 
-### Architecture Component
+## Table of Contents
 
-### Multi-Modular Architecture
+1. [Project Overview](#project-overview)
+2. [Features](#features)
+3. [Technologies](#Technologies)
+4. [Author](#author)
 
-### Jetpack Compose UI
+---
 
-### Room Database
+## Project Overview
 
-### Splash Api
+The **NoteBookCompose** project demonstrates how to use [Jetpack Compose](https://developer.android.com/jetpack/compose) to build a modern, reactive user interface. The application handles note CRUD operations (create, read, update, delete) and can serve as a foundation for a personal or professional note-taking app.
 
-### Material 3
+## Features
 
-### Coroutines
+- **Create Notes**: Add new notes with a title and content.
+- **Edit & Delete**: Easily update or remove existing notes.
+- **Modern UI**: Jetpack Compose provides a smooth, reactive user experience.
+- **Organization**: (Optional, depending on implementation) Group or filter notes by date, categories, etc.
 
-### Dagger-Hilt
 
-### One-Tap Sign in with Google
+## Technologies
 
-### Firebase Authentication
+Built using Kotlin, Jetpack Compose, Android Architecture Components, Multi-Modular Architecture, Room Database, Material 3, Coroutines, Dagger-Hilt, One-Tap Google Sign-In, Firebase (Auth, Storage), and MongoDB (Realm, Device Sync, Atlas).
 
-### Firebase Storage
+## Author
+Alassane Paulyaro – GitHub
 
-### Mongo DB Auth
+## ScreenShoot
 
-### Mongo Realm/Device Sync
+<img src="screenshot/Screenshot_1.png" alt="SplashScreen" width="393" height="852">
+<img src="screenshot/Screenshot_2.png" alt="Login screen" width="393" height="852">
+<img src="screenshot/Screenshot_3.png" alt="Empty Note" width="393" height="852">
+<img src="screenshot/Screenshot_4.png" alt="Navigation" width="393" height="852">
+<img src="screenshot/Screenshot_5.png" alt="Date Time" width="393" height="852">
+<img src="screenshot/Screenshot_6.png" alt="Home view" width="393" height="852">
+<img src="screenshot/Screenshot_7.png" alt="Edit View" width="393" height="852">
 
-### Realm Kotlin SDK
-
-### Mongo Atlas
-
-### Google Authentication
-
-### Synchronize the data between a client and the server
-
-### Flexible Sync
-
-### Date Time picker, clock and Calendar  <https://github.com/maxkeppeler/sheets-compose-dialogs>
-
-![SplashScreen](screenshot/Screenshot_1.png)
-![Login screen](screenshot/Screenshot_2.png)
-![Empty Note](screenshot/Screenshot_3.png)
-![Navigation](screenshot/Screenshot_4.png)
-![Date Time](screenshot/Screenshot_5.png)
-![Home view](screenshot/Screenshot_6.png)
-![Edit View](screenshot/Screenshot_7.png)
